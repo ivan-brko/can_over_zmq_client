@@ -5,3 +5,4 @@ authors = ["ivan"]
 
 [dependencies]
 zmq = "0.8"
+libc = "0.2"
