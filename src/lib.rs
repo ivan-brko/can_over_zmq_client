@@ -1,7 +1,4 @@
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-}
+static mut SERVER_IP_ADDRESS : &str = "";
+static mut SERVER_PORT : u32 = 0;
+static mut TX : u32 = 0;
+static mut RX : u32 = 0;
