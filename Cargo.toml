@@ -3,6 +3,10 @@ name = "client_library"
 version = "0.1.0"
 authors = ["ivan"]
 
+[lib]
+name = "can_over_zmq_client"
+crate-type = ["dylib"]
+
 [dependencies]
 zmq = "0.8"
 libc = "0.2"
