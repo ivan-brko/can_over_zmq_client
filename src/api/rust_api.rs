@@ -4,7 +4,7 @@ use ::global_variables;
 use std::thread;
 
 //TODO: change to better error handling
-pub fn initialize_library(server_address : String, server_port_for_listener : u32, server_port_for_sender : u32, tx : u32, rx : u32, callback : &'static Fn(&[u8]) -> ()) {
+pub fn initialize_library(server_address : String, server_port_for_listener : u32, server_port_for_sender : u32, tx : u32, rx : u32, callback : Box<Fn(&[u8]) -> ()>) {
 
     let context = zmq::Context::new();
 
