@@ -5,8 +5,6 @@ extern crate libc;
 
 static mut SERVER_IP_ADDRESS: Option<String> = None;
 static mut SERVER_PORT : Option<u32> = None;
-static mut TX : Option<u32> = None;
-static mut RX : Option<u32> = None;
 static mut ZMQ_CONTEXT : Option<zmq::Context> = None;
 static mut ZMQ_SENDER_SOCKET : Option<zmq::Socket> = None;
 static mut ZMQ_LISTENER_SOCKET : Option<zmq::Socket> = None;
@@ -34,30 +32,6 @@ pub fn get_server_port() -> Option<u32> {
 pub fn set_server_port(port:u32) {
     unsafe {
         SERVER_PORT = Some(port);
-    }
-}
-
-pub fn get_tx() -> Option<u32> {
-    unsafe {
-        TX
-    }
-}
-
-pub fn set_tx(tx:u32) {
-    unsafe {
-        TX = Some(tx);
-    }
-}
-
-pub fn get_rx() -> Option<u32> {
-    unsafe {
-        RX
-    }
-}
-
-pub fn set_rx(rx:u32) {
-    unsafe {
-        RX = Some(rx);
     }
 }
 
