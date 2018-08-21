@@ -9,7 +9,7 @@ static mut ZMQ_CONTEXT : Option<zmq::Context> = None;
 static mut ZMQ_SENDER_SOCKET : Option<zmq::Socket> = None;
 static mut ZMQ_LISTENER_SOCKET : Option<zmq::Socket> = None;
 // static mut RECEIVED_MESSAGE_CALLBACK : Option<&Fn(&[u8])->()> = None;
-static mut RECEIVED_MESSAGE_CALLBACK : Option<Box<Fn(&[u8])->()>> = None;
+static mut RECEIVED_MESSAGE_CALLBACK : Option<Box<Fn(u32, &[u8])->()>> = None;
 
 pub fn get_server_ip_address () -> &'static Option<String> {
     unsafe {
@@ -83,13 +83,13 @@ pub fn set_zmq_sender_socket(socket: zmq::Socket) {
 //     }
 // }
 
-pub fn get_received_message_callback() -> &'static Option<Box<Fn(&[u8])->()>> {
+pub fn get_received_message_callback() -> &'static Option<Box<Fn(u32, &[u8])->()>> {
     unsafe {
         &RECEIVED_MESSAGE_CALLBACK
     }
 }
 
-pub fn set_received_message_callback(callback: Box<Fn(&[u8])->()>) {
+pub fn set_received_message_callback(callback: Box<Fn(u32, &[u8])->()>) {
     unsafe {
         RECEIVED_MESSAGE_CALLBACK = Some(callback);
     }

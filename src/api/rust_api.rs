@@ -5,7 +5,7 @@ use std::thread;
 use std::mem::transmute;
 
 //TODO: change to better error handling
-pub fn initialize_library(server_address : String, server_port_for_listener : u32, server_port_for_sender : u32, rx_list: &[u32], callback : Box<Fn(&[u8]) -> ()>) {
+pub fn initialize_library(server_address : String, server_port_for_listener : u32, server_port_for_sender : u32, rx_list: &[u32], callback : Box<Fn(u32, &[u8]) -> ()>) {
 
     let context = zmq::Context::new();
 
@@ -22,7 +22,7 @@ pub fn initialize_library(server_address : String, server_port_for_listener : u3
     assert!(listener.connect(&full_address_for_listener).is_ok());
 
     for filter in rx_list {
-        assert!(listener.set_subscribe(&convert_to_byte_array(*filter)).is_ok());
+        assert!(listener.set_subscribe(&convert_u32_to_byte_array(*filter)).is_ok());
     }
 
     let sender = context.socket(zmq::PUSH).unwrap();
@@ -44,7 +44,7 @@ pub fn send_message(data: &[u8], tx: u32) -> Result<(), ()> {
         let sender_socket = global_variables::get_zmq_sender_socket().as_ref().unwrap(); //need as_ref here because this whole option is a borrowed reference
                                                                                          //TODO: replace unwrapping with error handling
 
-        let tx = convert_to_byte_array(tx);
+        let tx = convert_u32_to_byte_array(tx);
 
         let mut message = tx.to_vec();
 
@@ -67,7 +67,8 @@ fn start_message_receiveing_thread() -> Result<(), ()> {
             let msg = listener_socket.recv_bytes(0).unwrap();
             println!("Got a message here");
             thread::spawn(move || {
-               global_variables::get_received_message_callback().as_ref().unwrap()(&msg);   //moved this to a separate thread to allow callbacks that last longer
+                let id = convert_byte_array_to_u32(&msg);
+                global_variables::get_received_message_callback().as_ref().unwrap()(id, &msg[3..]);   //moved this to a separate thread to allow callbacks that last longer
                                                                                             //some thread pool, or green threads need to be used here, this will be slow
             });
         }
@@ -76,7 +77,16 @@ fn start_message_receiveing_thread() -> Result<(), ()> {
 }
 
 //TODO: maybe use the byteorder lib here? using transmute is discouraged by rust std-lib documentation
-fn convert_to_byte_array(filter: u32) -> Box<[u8]> {
+fn convert_u32_to_byte_array(filter: u32) -> Box<[u8]> {
     let bytes : Box<[u8; 4]> = Box::new(unsafe {transmute(filter.to_be())});
     bytes
+}
+
+//TODO: check that byte array is max 4 elements
+fn convert_byte_array_to_u32(val: &[u8]) -> u32 {
+    let mut sum : u32 = 0;
+    for (i, v) in val.iter().skip(4).rev().enumerate() {
+        sum += 256u32.pow(i as u32) * (*v as u32);
+    }
+    sum
 }

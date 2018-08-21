@@ -10,14 +10,14 @@ use super::rust_api;
 
 //TODO: memory handling for pointers coming from C-code? who needs to delete what?
 #[no_mangle]
-pub extern "C" fn initialize_library(server_address: *const c_char, server_port_for_listener : u32, server_port_for_sender : u32, rx_list_ptr: *const libc::uint32_t, size: libc::size_t, callback: extern "C" fn(*const libc::uint8_t, libc::size_t)) {
+pub extern "C" fn initialize_library(server_address: *const c_char, server_port_for_listener : u32, server_port_for_sender : u32, rx_list_ptr: *const libc::uint32_t, size: libc::size_t, callback: extern "C" fn(libc::uint32_t, *const libc::uint8_t, libc::size_t)) {
         let server_address = unsafe {CStr::from_ptr(server_address)};
         let server_address = String::from(server_address.to_str().unwrap());
         let rx_list = unsafe {std::slice::from_raw_parts(rx_list_ptr, size)};
-        rust_api::initialize_library(server_address, server_port_for_listener, server_port_for_sender, rx_list, Box::new(move |data: &[u8]| {
+        rust_api::initialize_library(server_address, server_port_for_listener, server_port_for_sender, rx_list, Box::new(move |id: u32, data: &[u8]| {
            let data_as_ptr = data.as_ptr() as *const libc::uint8_t;
            let length = data.len() as libc::size_t;
-           callback(data_as_ptr, length); //TODO: memory leak? who has to delete the data for each message?
+           callback(id, data_as_ptr, length); //TODO: memory leak? who has to delete the data for each message?
         }));
 }
 
