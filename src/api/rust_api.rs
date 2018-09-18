@@ -68,7 +68,7 @@ fn start_message_receiveing_thread() -> Result<(), ()> {
             println!("Got a message here");
             thread::spawn(move || {
                 let id = convert_byte_array_to_u32(&msg);
-                global_variables::get_received_message_callback().as_ref().unwrap()(id, &msg[3..]);   //moved this to a separate thread to allow callbacks that last longer
+                global_variables::get_received_message_callback().as_ref().unwrap()(id, &msg[4..]);   //moved this to a separate thread to allow callbacks that last longer
                                                                                             //some thread pool, or green threads need to be used here, this will be slow
             });
         }
