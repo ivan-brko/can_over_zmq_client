@@ -85,7 +85,7 @@ fn convert_u32_to_byte_array(filter: u32) -> Box<[u8]> {
 //TODO: check that byte array is max 4 elements
 fn convert_byte_array_to_u32(val: &[u8]) -> u32 {
     let mut sum : u32 = 0;
-    for (i, v) in val.iter().skip(4).rev().enumerate() {
+    for (i, v) in val[..4].iter().rev().enumerate() {
         sum += 256u32.pow(i as u32) * (*v as u32);
     }
     sum
