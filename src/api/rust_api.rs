@@ -65,7 +65,6 @@ fn start_message_receiveing_thread() -> Result<(), ()> {
         println!("Got the listener thread");
         loop {
             let msg = listener_socket.recv_bytes(0).unwrap();
-            println!("Got a message here");
             thread::spawn(move || {
                 let id = convert_byte_array_to_u32(&msg);
                 global_variables::get_received_message_callback().as_ref().unwrap()(id, &msg[4..]);   //moved this to a separate thread to allow callbacks that last longer
